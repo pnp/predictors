@@ -19,8 +19,18 @@ namespace PnP.PowerShell.Predictor.Services
 
         public PnPPowerShellPredictorService(IPnPPowerShellContext pnpPowerShellContext, Settings settings)
         {
-            _suggestionsFilePath = string.Format(PnPPowerShellPredictorConstants.RemoteSuggestionsFilePath,
-                pnpPowerShellContext.PnPPowerShellVersion);
+            var branch = "master";
+            var releaseVersion = pnpPowerShellContext.PnPPowerShellVersion.ToString();
+            if(pnpPowerShellContext.PnPPowerShellVersion.Build != 0)
+            {
+                branch = "dev";
+                releaseVersion = "nightly";
+            }
+            
+            _suggestionsFilePath = string.Format(PnPPowerShellPredictorConstants.RemoteSuggestionsFilePath, 
+                branch,
+                releaseVersion);
+
             _commandSearchMethod = settings.CommandSearchMethod;
             _client = new HttpClient();
             RequestAllPredictiveCommands(settings.ShowWarning);
